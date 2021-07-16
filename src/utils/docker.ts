@@ -3,8 +3,8 @@ import yaml from 'js-yaml';
 import { resolve } from 'path';
 import { green, red } from 'chalk';
 
-import { CWD } from '../utils/files';
-import { exec } from '../utils/processes';
+import { CWD } from './files';
+import { exec } from './processes';
 
 const capitalize = (value: string) =>
   value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
@@ -64,10 +64,12 @@ export const composeServices = async (): Promise<{
 };
 
 /** Get names of docker-compose services in this project. */
-export const composeServiceNames = async (serviceWhitelist?: string[]) => {
+export const composeServiceNames = async (serviceWhitelist?: string[], serviceWhitelistTag?: string | undefined) => {
   const allServices = Object.keys(await composeServices());
-  if (!serviceWhitelist) return allServices;
-  return allServices.filter((n) => serviceWhitelist.includes(n));
+  if (!serviceWhitelist && !serviceWhitelistTag) return allServices;
+  return allServices
+    .filter((n) => !serviceWhitelistTag || serviceWhitelistTag === n)
+    .filter((n) => serviceWhitelist?.includes(n));
 };
 
 /** Returns a list of all services in the `docker-compose.yml` file */

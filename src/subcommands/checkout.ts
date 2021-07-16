@@ -15,8 +15,9 @@ export const checkoutService = async (name: string, branch: string) => {
 export const checkoutServices = async (
   branch: string,
   serviceWhitelist?: string[],
+  serviceWhitelistTag?: string | undefined,
 ) => {
-  const services = await readServices(serviceWhitelist);
+  const services = await readServices(serviceWhitelist, serviceWhitelistTag);
 
   for (const { name, repo } of services) {
     if (!repo) continue;

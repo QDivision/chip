@@ -12,8 +12,8 @@ export const statusService = async (name: string) => {
   await git.status(repoDir);
 };
 
-export const statusServices = async (serviceWhitelist?: string[]) => {
-  const services = await readServices(serviceWhitelist);
+export const statusServices = async (serviceWhitelist?: string[], serviceWhitelistTag?: string | undefined) => {
+  const services = await readServices(serviceWhitelist, serviceWhitelistTag);
 
   for (const { name, repo } of services) {
     if (!repo) continue;

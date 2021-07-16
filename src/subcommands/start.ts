@@ -38,7 +38,7 @@ export const startService = async (
   await persistPid(PROJECT_NAME, serviceName, subprocess.pid);
 };
 
-export const startServices = async (serviceWhitelist: string[]) => {
+export const startServices = async (serviceWhitelist: string[], serviceWhitelistTag?: string | undefined) => {
   if (docker.isPresent()) {
     if (serviceWhitelist.length === 0) {
       await docker.up();
@@ -48,7 +48,7 @@ export const startServices = async (serviceWhitelist: string[]) => {
     }
   }
 
-  const services = await readServices(serviceWhitelist);
+  const services = await readServices(serviceWhitelist, serviceWhitelistTag);
   const activeProcesses = await getActiveProcesses(PROJECT_NAME);
 
   for (const { name, run, env, secrets } of services) {

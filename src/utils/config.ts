@@ -1,6 +1,6 @@
 import fs from 'mz/fs';
 import yaml from 'js-yaml';
-import { readJsonFile, CHIP_PROCESSES_FILE } from './files';
+import {CHIP_PROCESSES_FILE, readJsonFile} from './files';
 
 export interface ChipConfig {
   setup?: string;
@@ -13,6 +13,7 @@ export interface ChipConfig {
           install?: string;
           run?: string;
           env?: { [envVar: string]: string };
+          tags?: string[];
         }
       | undefined;
   };
@@ -26,15 +27,13 @@ export interface ChipSecrets {
 
 export const readConfig = async (): Promise<ChipConfig> => {
   const chipYml = await fs.readFile('./chip.yml', 'utf8');
-  const chipConfig = (await yaml.safeLoad(chipYml)) as any;
-  return chipConfig;
+  return (await yaml.safeLoad(chipYml)) as any;
 };
 
 export const readSecrets = async (): Promise<ChipSecrets> => {
   try {
     const secretYml = await fs.readFile('./secretchip.yml', 'utf8');
-    const secretConfig = (await yaml.safeLoad(secretYml)) as any;
-    return secretConfig;
+    return (await yaml.safeLoad(secretYml)) as any;
   } catch (e) {
     if (e.code === 'ENOENT') return {};
     else throw e;
@@ -52,6 +51,7 @@ export const readScripts = async () => {
 
 export const readServices = async (
   whitelist: string[] = [],
+  whitelistTag?: string | undefined,
 ): Promise<
   {
     name: string;
@@ -60,6 +60,7 @@ export const readServices = async (
     run?: string;
     env: { [envVar: string]: string };
     secrets: { [name: string]: string };
+    tags?: string[];
   }[]
 > => {
   const config = await readConfig();
@@ -74,6 +75,9 @@ export const readServices = async (
     }),
   );
 
+  if (whitelistTag) {
+      return allServices.filter((service) => service?.tags?.includes(whitelistTag));
+  }
   return whitelist.length > 0
     ? allServices.filter((service) => whitelist.includes(service.name))
     : allServices;

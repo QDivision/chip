@@ -10,6 +10,7 @@ import { startService } from './start';
 export const restartServices = async (
   serviceWhitelist: string[],
   removeDockerContainers = false,
+  serviceWhitelistTag?: string | undefined
 ) => {
   if (docker.isPresent()) {
     if (serviceWhitelist.length === 0) {
@@ -26,7 +27,7 @@ export const restartServices = async (
     }
   }
 
-  const services = await readServices(serviceWhitelist);
+  const services = await readServices(serviceWhitelist, serviceWhitelistTag);
   const activeProcesses = await getActiveProcesses(PROJECT_NAME);
 
   for (const { name, run, env, secrets } of services) {

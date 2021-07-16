@@ -18,8 +18,8 @@ export const syncService = async (name: string, repo: string) => {
   }
 };
 
-export const syncServices = async (serviceWhitelist?: string[]) => {
-  const services = await readServices(serviceWhitelist);
+export const syncServices = async (serviceWhitelist?: string[], serviceWhitelistTag?: string | undefined) => {
+  const services = await readServices(serviceWhitelist, serviceWhitelistTag);
 
   for (const { name, repo } of services) {
     if (!repo) continue;

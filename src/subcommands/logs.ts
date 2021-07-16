@@ -84,8 +84,8 @@ const printLog = (
   console.log(prefix + log);
 };
 
-export const logServices = async (serviceWhitelist?: string[]) => {
-  const services = await readServices(serviceWhitelist);
+export const logServices = async (serviceWhitelist?: string[], serviceWhitelistTag?: string | undefined) => {
+  const services = await readServices(serviceWhitelist, serviceWhitelistTag);
   const serviceNames = services.map(({ name }) => name);
   const longestServiceName = (maxBy(serviceNames, 'length') || '').length;
 

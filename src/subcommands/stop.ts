@@ -5,6 +5,7 @@ import { exec } from '../utils/processes';
 import { processExists, getActiveProcesses } from '../utils/ps';
 import { PROJECT_NAME } from '../utils/files';
 import { printError } from '../utils/errors';
+import {readServices} from "../utils/config";
 
 export const stopProcess = async (name: string, pid: number) => {
   console.log(chalk`Stopping {bold ${name}} with pid {bold ${pid}}`);
@@ -22,28 +23,27 @@ export const stopProcess = async (name: string, pid: number) => {
 export const stopServices = async (
   serviceWhitelist: string[],
   removeDockerContainers = false,
+  serviceWhitelistTag?: string | undefined,
 ) => {
-  const processes = await getActiveProcesses(PROJECT_NAME);
 
-  const filteredProcesses = Object.entries(processes).filter(
-    ([name]) =>
-      serviceWhitelist.length === 0 || serviceWhitelist.includes(name),
-  );
+  const services = await readServices(serviceWhitelist, serviceWhitelistTag);
+  const activeProcesses = await getActiveProcesses(PROJECT_NAME);
 
-  for (const [name, { pid }] of filteredProcesses) {
+  for (const { name, run } of services) {
+    if (!run || !activeProcesses[name]) continue;
     try {
-      await stopProcess(name, pid);
+      await stopProcess(name, activeProcesses[name].pid);
     } catch (e) {
       printError(e);
     }
   }
 
   if (docker.isPresent()) {
-    if (serviceWhitelist.length === 0) {
+    if (serviceWhitelist.length === 0 && !serviceWhitelistTag) {
       if (removeDockerContainers) await docker.rm();
       else await docker.stop();
     } else {
-      const dockerServices = await docker.composeServiceNames(serviceWhitelist);
+      const dockerServices = await docker.composeServiceNames(serviceWhitelist, serviceWhitelistTag);
       if (dockerServices.length > 0) {
         if (removeDockerContainers) await docker.rm(dockerServices);
         else await docker.stop(dockerServices);

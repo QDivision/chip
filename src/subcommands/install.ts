@@ -24,8 +24,8 @@ export const installService = async (
   );
 };
 
-export const installServices = async (serviceWhitelist?: string[]) => {
-  const services = await readServices(serviceWhitelist);
+export const installServices = async (serviceWhitelist?: string[], serviceWhitelistTag?: string | undefined) => {
+  const services = await readServices(serviceWhitelist, serviceWhitelistTag);
 
   log`Executing {bold preinstall} script`;
   const scripts = await readScripts();

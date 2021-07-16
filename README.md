@@ -45,6 +45,11 @@ Commands:
   chip restart [services..]            Stop and restart services in project
   chip logs [services..]               View logs for services in project
   chip list                            List all services in project
+
+Options:
+      --version  Show version number                                   [boolean]
+  -t, --tag      Filter by tag instead of services list                 [string]
+      --help     Show help                                             [boolean]
 ```
 
 ## Sample Project
@@ -83,11 +88,15 @@ services:
     repo: 'git@github.com:QDivision/sandwich-ui.git'
     install: 'yarn install'
     run: 'yarn start'
+    tags:
+      - sandwich
 
   sandwich-api:
     repo: 'git@github.com:QDivision/sandwich-api.git'
     install: 'mvn clean package -D maven.test.skip=true'
     run: 'mvn spring-boot:run -D spring-boot.run.profiles=local'
+    tags:
+      - sandwich
 
   ingredient-api:
     repo: 'git@github.com:QDivision/ingredient-api.git'
