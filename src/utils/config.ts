@@ -36,7 +36,7 @@ export const readSecrets = async (): Promise<ChipSecrets> => {
     const secretYml = await fs.readFile('./secretchip.yml', 'utf8');
     const secretConfig = (await yaml.safeLoad(secretYml)) as any;
     return secretConfig;
-  } catch (e) {
+  } catch (e: NodeJS.ErrnoException) {
     if (e.code === 'ENOENT') return {};
     else throw e;
   }

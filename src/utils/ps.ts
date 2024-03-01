@@ -21,7 +21,7 @@ export const lookupStartTime = async (pid: number) => {
     // Sample output: `Wed Sep  2 11:17:24 2020`
     const startDate = await exec(`ps -p ${pid} -o lstart=`);
     return new Date(startDate).getTime();
-  } catch (e) {
+  } catch (e: Error) {
     if (e.message) {
       e.message = `Failed to get start start time for pid ${pid}: ${e.message}`;
     }
